@@ -30,14 +30,13 @@ public class FileSearcher {
         String directoryPath = scanner.nextLine();
         System.out.println("Digite o valor a ser procurado:");
         String searchValue = scanner.nextLine().toLowerCase();
-        scanner.close();
 
         try {
             Files.walkFileTree(Paths.get(directoryPath), new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     String fileName = file.toString().toLowerCase();
-                    
+                    try {
                         if (fileName.endsWith(".doc") || fileName.endsWith(".docx")) {
                             if (containsWord(file, searchValue)) {
                                 System.out.println("Valor encontrado em: " + file);
@@ -51,7 +50,9 @@ public class FileSearcher {
                                 System.out.println("Valor encontrado em: " + file);
                             }
                         }
-                  
+                    } catch (Exception e) {
+                        System.err.println("Erro ao processar o arquivo: " + file + " - " + e.getMessage());
+                    }
                     return FileVisitResult.CONTINUE;
                 }
             });
@@ -78,7 +79,7 @@ public class FileSearcher {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println("Erro ao processar o arquivo Word: " + file + " - " + e.getMessage());
         }
         return false;
@@ -95,7 +96,7 @@ public class FileSearcher {
                     return searchWorkbook(workbook, searchValue);
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println("Erro ao processar o arquivo Excel: " + file + " - " + e.getMessage());
         }
         return false;
